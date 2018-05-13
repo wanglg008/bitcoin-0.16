@@ -31,14 +31,14 @@ static const char DB_REINDEX_FLAG = 'R';
 static const char DB_LAST_BLOCK = 'l';
 
 namespace {
-
+//txdb模块主要是用来实现block和utxo两个模块的写盘逻辑
 struct CoinEntry {
     COutPoint* outpoint;
     char key;
     explicit CoinEntry(const COutPoint* ptr) : outpoint(const_cast<COutPoint*>(ptr)), key(DB_COIN)  {}
 
     template<typename Stream>
-    void Serialize(Stream &s) const {
+    void Serialize(Stream &s) const { //key是DB_COIN+hash+n
         s << key;
         s << outpoint->hash;
         s << VARINT(outpoint->n);
@@ -149,7 +149,7 @@ size_t CCoinsViewDB::EstimateSize() const
 
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {
 }
-
+//将CBlockIndex转化为CDiskBlockIndex存储在leveldb等数据库里
 bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo &info) {
     return Read(std::make_pair(DB_BLOCK_FILES, nFile), info);
 }
@@ -258,7 +258,7 @@ bool CBlockTreeDB::ReadFlag(const std::string &name, bool &fValue) {
     fValue = ch == '1';
     return true;
 }
-
+//将整个数据库加载到内存中
 bool CBlockTreeDB::LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&)> insertBlockIndex)
 {
     std::unique_ptr<CDBIterator> pcursor(NewIterator());

@@ -50,7 +50,7 @@
 #if defined(NDEBUG)
 # error "Bitcoin cannot be compiled without assertions."
 #endif
-
+//读取BLK文件信息参考：https://blog.csdn.net/lazypiggy/article/details/79414709
 #define MICRO 0.000001
 #define MILLI 0.001
 

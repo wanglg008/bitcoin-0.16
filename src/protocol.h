@@ -19,18 +19,22 @@
 #include <string>
 
 /** Message header.
- * (4) message start.
- * (12) command.
- * (4) size.
- * (4) checksum.
+ * (4) message start. 告诉发送端的节点，现在可以发送Magic的消息；用于在流状态未知时寻求下一条消息
+ * (12) command.      标志有效载荷中包含的消息类型的ASCII字符串。随后是空值0x00来填充字节数
+ * (4) size.          有效payload中的字节数
+ * (4) checksum.      SHA256的前4个字节以内字节顺序排列
  */
 class CMessageHeader
 {
 public:
+    //消息开始字符串，长度4字节，就是告诉你是属于哪种消息标识，在UTF-8中无效
+    //主类型（MAIN）： 0xd9b4bef9
+    //测试网络(TESTNET)：0x0709110b
+    //回归测试(REGTEST)：0xdab6bffa
     static constexpr size_t MESSAGE_START_SIZE = 4;
-    static constexpr size_t COMMAND_SIZE = 12;
-    static constexpr size_t MESSAGE_SIZE_SIZE = 4;
-    static constexpr size_t CHECKSUM_SIZE = 4;
+    static constexpr size_t COMMAND_SIZE = 12;       //定义了通信中的各种命令，由0x20~0x7F之间的字符串构成
+    static constexpr size_t MESSAGE_SIZE_SIZE = 4;   //最大值是32M (0x02000000)。 不包含消息头的大小
+    static constexpr size_t CHECKSUM_SIZE = 4;       //把消息数据经过2次SHA256算法运算得到校验和
     static constexpr size_t MESSAGE_SIZE_OFFSET = MESSAGE_START_SIZE + COMMAND_SIZE;
     static constexpr size_t CHECKSUM_OFFSET = MESSAGE_SIZE_OFFSET + MESSAGE_SIZE_SIZE;
     static constexpr size_t HEADER_SIZE = MESSAGE_START_SIZE + COMMAND_SIZE + MESSAGE_SIZE_SIZE + CHECKSUM_SIZE;
@@ -70,100 +74,100 @@ namespace NetMsgType {
  * receiving node at the beginning of a connection.
  * @see https://bitcoin.org/en/developer-reference#version
  */
-extern const char *VERSION;
+extern const char *VERSION; //获取版本信息
 /**
  * The verack message acknowledges a previously-received version message,
  * informing the connecting node that it can begin to send other messages.
  * @see https://bitcoin.org/en/developer-reference#verack
  */
-extern const char *VERACK;
+extern const char *VERACK; //版本信息回应
 /**
  * The addr (IP address) message relays connection information for peers on the
  * network.
  * @see https://bitcoin.org/en/developer-reference#addr
  */
-extern const char *ADDR;
+extern const char *ADDR;  //网络节点的地址
 /**
  * The inv message (inventory message) transmits one or more inventories of
  * objects known to the transmitting peer.
  * @see https://bitcoin.org/en/developer-reference#inv
  */
-extern const char *INV;
+extern const char *INV;  //库存清单
 /**
  * The getdata message requests one or more data objects from another node.
  * @see https://bitcoin.org/en/developer-reference#getdata
  */
-extern const char *GETDATA;
+extern const char *GETDATA;      //获取数据
 /**
  * The merkleblock message is a reply to a getdata message which requested a
  * block using the inventory type MSG_MERKLEBLOCK.
  * @since protocol version 70001 as described by BIP37.
  * @see https://bitcoin.org/en/developer-reference#merkleblock
  */
-extern const char *MERKLEBLOCK;
+extern const char *MERKLEBLOCK; //merkle块
 /**
  * The getblocks message requests an inv message that provides block header
  * hashes starting from a particular point in the block chain.
  * @see https://bitcoin.org/en/developer-reference#getblocks
  */
-extern const char *GETBLOCKS;
+extern const char *GETBLOCKS;  //获取区块
 /**
  * The getheaders message requests a headers message that provides block
  * headers starting from a particular point in the block chain.
  * @since protocol version 31800.
  * @see https://bitcoin.org/en/developer-reference#getheaders
  */
-extern const char *GETHEADERS;
+extern const char *GETHEADERS;//获取区块头
 /**
  * The tx message transmits a single transaction.
  * @see https://bitcoin.org/en/developer-reference#tx
  */
-extern const char *TX;
+extern const char *TX;        //交易信息
 /**
  * The headers message sends one or more block headers to a node which
  * previously requested certain headers with a getheaders message.
  * @since protocol version 31800.
  * @see https://bitcoin.org/en/developer-reference#headers
  */
-extern const char *HEADERS;
+extern const char *HEADERS;  //区块头
 /**
  * The block message transmits a single serialized block.
  * @see https://bitcoin.org/en/developer-reference#block
  */
-extern const char *BLOCK;
+extern const char *BLOCK;   //区块
 /**
  * The getaddr message requests an addr message from the receiving node,
  * preferably one with lots of IP addresses of other receiving nodes.
  * @see https://bitcoin.org/en/developer-reference#getaddr
  */
-extern const char *GETADDR;
+extern const char *GETADDR;//获取地址
 /**
  * The mempool message requests the TXIDs of transactions that the receiving
  * node has verified as valid but which have not yet appeared in a block.
  * @since protocol version 60002.
  * @see https://bitcoin.org/en/developer-reference#mempool
  */
-extern const char *MEMPOOL;
+extern const char *MEMPOOL;//内存池
 /**
  * The ping message is sent periodically to help confirm that the receiving
  * peer is still connected.
  * @see https://bitcoin.org/en/developer-reference#ping
  */
-extern const char *PING;
+extern const char *PING;  //判断网络是否连通
 /**
  * The pong message replies to a ping message, proving to the pinging node that
  * the ponging node is still alive.
  * @since protocol version 60001 as described by BIP31.
  * @see https://bitcoin.org/en/developer-reference#pong
  */
-extern const char *PONG;
+extern const char *PONG; //ping消息回应
 /**
  * The notfound message is a reply to a getdata message which requested an
  * object the receiving node does not have available for relay.
  * @since protocol version 70001.
  * @see https://bitcoin.org/en/developer-reference#notfound
  */
-extern const char *NOTFOUND;
+extern const char *NOTFOUND; //没有获取相匹配的数据
 /**
  * The filterload message tells the receiving peer to filter all relayed
  * transactions and requested merkle blocks through the provided filter.
@@ -172,7 +176,7 @@ extern const char *NOTFOUND;
  *   70011 as described by BIP111.
  * @see https://bitcoin.org/en/developer-reference#filterload
  */
-extern const char *FILTERLOAD;
+extern const char *FILTERLOAD;  //加载过滤器
 /**
  * The filteradd message tells the receiving peer to add a single element to a
  * previously-set bloom filter, such as a new public key.
@@ -181,7 +185,7 @@ extern const char *FILTERLOAD;
  *   70011 as described by BIP111.
  * @see https://bitcoin.org/en/developer-reference#filteradd
  */
-extern const char *FILTERADD;
+extern const char *FILTERADD;  //添加过滤交易信息
 /**
  * The filterclear message tells the receiving peer to remove a previously-set
  * bloom filter.
@@ -190,27 +194,27 @@ extern const char *FILTERADD;
  *   70011 as described by BIP111.
  * @see https://bitcoin.org/en/developer-reference#filterclear
  */
-extern const char *FILTERCLEAR;
+extern const char *FILTERCLEAR;//清理过滤器
 /**
  * The reject message informs the receiving node that one of its previous
  * messages has been rejected.
  * @since protocol version 70002 as described by BIP61.
  * @see https://bitcoin.org/en/developer-reference#reject
  */
-extern const char *REJECT;
+extern const char *REJECT;    //拒绝
 /**
  * Indicates that a node prefers to receive new block announcements via a
  * "headers" message rather than an "inv".
  * @since protocol version 70012 as described by BIP130.
  * @see https://bitcoin.org/en/developer-reference#sendheaders
  */
-extern const char *SENDHEADERS;
+extern const char *SENDHEADERS; //bip130 发送块头信息
 /**
  * The feefilter message tells the receiving peer not to inv us any txs
  * which do not meet the specified min fee rate.
  * @since protocol version 70013 as described by BIP133
  */
-extern const char *FEEFILTER;
+extern const char *FEEFILTER;  //BIP133 feefilter
 /**
  * Contains a 1-byte bool and 8-byte LE version number.
  * Indicates that a node is willing to provide blocks via "cmpctblock" messages.
@@ -218,25 +222,25 @@ extern const char *FEEFILTER;
  * "cmpctblock" message rather than an "inv", depending on message contents.
  * @since protocol version 70014 as described by BIP 152
  */
-extern const char *SENDCMPCT;
+extern const char *SENDCMPCT; // BIP152 发送紧凑区块
 /**
  * Contains a CBlockHeaderAndShortTxIDs object - providing a header and
  * list of "short txids".
  * @since protocol version 70014 as described by BIP 152
  */
-extern const char *CMPCTBLOCK;
+extern const char *CMPCTBLOCK;// BIP152 紧凑区块
 /**
  * Contains a BlockTransactionsRequest
  * Peer should respond with "blocktxn" message.
  * @since protocol version 70014 as described by BIP 152
  */
-extern const char *GETBLOCKTXN;
+extern const char *GETBLOCKTXN;// BIP152 获取紧凑区块交易
 /**
  * Contains a BlockTransactions.
  * Sent in response to a "getblocktxn" message.
  * @since protocol version 70014 as described by BIP 152
  */
-extern const char *BLOCKTXN;
+extern const char *BLOCKTXN;// BIP152 紧凑区块交易
 };
 
 /* Get a vector of all valid message types (see above) */
@@ -352,10 +356,10 @@ public:
 
     // TODO: make private (improves encapsulation)
 public:
-    ServiceFlags nServices;
+    ServiceFlags nServices;  //服务标识
 
     // disk and network only
-    unsigned int nTime;
+    unsigned int nTime;      //时间
 };
 
 /** getdata message type flags */

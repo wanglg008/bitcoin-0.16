@@ -603,8 +603,8 @@ class CNode
     friend class CConnman;
 public:
     // socket
-    std::atomic<ServiceFlags> nServices;
-    SOCKET hSocket;
+    std::atomic<ServiceFlags> nServices;                     //服务标识
+    SOCKET hSocket;                                          //对应本地和这个节点连接的套接字
     size_t nSendSize; // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
     uint64_t nSendBytes;
@@ -631,7 +631,7 @@ public:
     const CAddress addr;
     // Bind address of our side of the connection
     const CAddress addrBind;
-    std::atomic<int> nVersion;
+    std::atomic<int> nVersion;                              //节点对应的版本，如果节点版本为0，则消息发送不出去
     // strSubVer is whatever byte array we read from the wire. However, this field is intended
     // to be printed out, displayed to humans in various forms and so on. So we sanitize it and
     // store the sanitized version in cleanSubVer. The original should be used when dealing with
@@ -642,7 +642,7 @@ public:
     bool fFeeler; // If true this node is being used as a short lived feeler.
     bool fOneShot;
     bool m_manual_connection;
-    bool fClient;
+    bool fClient; //标记是否是客户端，如果是客户端则需要区块的头部进行校验就可以了,不需要保存整个区块的内容
     const bool fInbound;
     std::atomic_bool fSuccessfullyConnected;
     std::atomic_bool fDisconnect;
@@ -671,7 +671,7 @@ public:
 
     // flood relay
     std::vector<CAddress> vAddrToSend;
-    CRollingBloomFilter addrKnown;
+    CRollingBloomFilter addrKnown;   //已知地址的集合
     bool fGetAddr;
     std::set<uint256> setKnown;
     int64_t nNextAddrSend;

@@ -37,10 +37,11 @@ static const int64_t nMaxBlockDBCache = 2;
 static const int64_t nMaxBlockDBAndTxIndexCache = 1024;
 //! Max memory allocated to coin DB specific cache (MiB)
 static const int64_t nMaxCoinsDBCache = 8;
-
+//CDiskTxPos中的nFile，nBlockPos和nTxPos分别是区块数据文件的序号，区块在区块数据文件当中的位置和交易在区块数据中的位置。因此，CDiskTxPos包含了从
+//区块数据文件中找到某笔交易的全部信息。
 struct CDiskTxPos : public CDiskBlockPos
 {
-    unsigned int nTxOffset; // after header
+    unsigned int nTxOffset; // after header     交易在对应块中的偏移
 
     ADD_SERIALIZE_METHODS;
 
@@ -64,6 +65,8 @@ struct CDiskTxPos : public CDiskBlockPos
 };
 
 /** CCoinsView backed by the coin database (chainstate/) */
+//CCoinsView由coin数据库备份（chainstate /），主要 leveld 进行交互。它会根 chainstat  LevelD 设置 UTXO, 
+//检索coins并且flush到LevelDB的变化:
 class CCoinsViewDB final : public CCoinsView
 {
 protected:
@@ -83,7 +86,7 @@ public:
     size_t EstimateSize() const override;
 };
 
-/** Specialization of CCoinsViewCursor to iterate over a CCoinsViewDB */
+/** Specialization of CCoinsViewCursor to iterate over a CCoinsViewDB *///专门用来迭代CCoinsViewDB
 class CCoinsViewDBCursor: public CCoinsViewCursor
 {
 public:
@@ -104,8 +107,8 @@ private:
 
     friend class CCoinsViewDB;
 };
-
-/** Access to the block database (blocks/index/) */
+//LevelDB的块索引是通过txdb.h中定义的CBlockTreeDB包装类来访问;
+/** Access to the block database (blocks/index/) */ //将CBlockIndex转化为CDiskBlockIndex存储在leveldb等数据库里
 class CBlockTreeDB : public CDBWrapper
 {
 public:

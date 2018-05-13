@@ -147,11 +147,11 @@ class CDataStream
 {
 protected:
     typedef CSerializeData vector_type;
-    vector_type vch;
-    unsigned int nReadPos;
+    vector_type vch;                      //流中存放的数据
+    unsigned int nReadPos;                //流中读取的位置
 
-    int nType;
-    int nVersion;
+    int nType;                            //类型
+    int nVersion;                         //版本
 public:
 
     typedef vector_type::allocator_type   allocator_type;

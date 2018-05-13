@@ -21,12 +21,12 @@ class CBlockHeader
 {
 public:
     // header
-    int32_t nVersion;           //版本
-    uint256 hashPrevBlock;      //前一个区块的hash
+    int32_t nVersion;           //块的版本，主要为了后续的升级使用
+    uint256 hashPrevBlock;      //前一个块对应的hash
     uint256 hashMerkleRoot;     //Merkle树根
-    uint32_t nTime;             //时间戳
-    uint32_t nBits;             //POW难度
-    uint32_t nNonce;            //要找的随机数
+    uint32_t nTime;             //区块创建时间：这个值取max(前11个区块对应创建时间中位数，当前时间)
+    uint32_t nBits;             //记录本区块难度
+    uint32_t nNonce;            //工作量证明获得随机数，这个随机数正好满足当前挖矿对应的难度
 
     CBlockHeader()
     {
@@ -73,7 +73,7 @@ class CBlock : public CBlockHeader
 {
 public:
     // network and disk
-    std::vector<CTransactionRef> vtx;   //所有的交易
+    std::vector<CTransactionRef> vtx;   //块中交易列表
 
     // memory only
     mutable bool fChecked;              //交易是否验证过并构成Merkle树

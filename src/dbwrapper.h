@@ -172,7 +172,7 @@ public:
     }
 
 };
-
+//CDBWrapper是一个leveldb的包装函数，无论utxo还是block，均通过它写入leveldb
 class CDBWrapper
 {
     friend const std::vector<unsigned char>& dbwrapper_private::GetObfuscateKey(const CDBWrapper &w);
@@ -211,12 +211,12 @@ private:
 
 public:
     /**
-     * @param[in] path        Location in the filesystem where leveldb data will be stored.
-     * @param[in] nCacheSize  Configures various leveldb cache settings.
-     * @param[in] fMemory     If true, use leveldb's memory environment.
-     * @param[in] fWipe       If true, remove all existing data.
-     * @param[in] obfuscate   If true, store data obfuscated via simple XOR. If false, XOR
-     *                        with a zero'd byte array.
+     * @param[in] path        Location in the filesystem where leveldb data will be stored. 系统中存储leveldb数据的位置
+     * @param[in] nCacheSize  Configures various leveldb cache settings.                    配置各种leveldb缓存设置
+     * @param[in] fMemory     If true, use leveldb's memory environment.                    如果为true，则使用leveldb的内存环境
+     * @param[in] fWipe       If true, remove all existing data.                            如果为true，则删除所有现有数据
+     * @param[in] obfuscate   If true, store data obfuscated via simple XOR. If false, XOR  如果为true，则通过简单的XOR存储数据。
+     *                        with a zero'd byte array.                                     如果为false，则与零字节数组进行异或运算
      */
     CDBWrapper(const fs::path& path, size_t nCacheSize, bool fMemory = false, bool fWipe = false, bool obfuscate = false);
     ~CDBWrapper();

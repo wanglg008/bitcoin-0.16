@@ -19,7 +19,7 @@ class COutPoint
 {
 public:
     uint256 hash;   //交易哈希值
-    uint32_t n;     //交易输出数组索引
+    uint32_t n;     //对应的序列号(交易对应的第几个输出)
 
     COutPoint(): n((uint32_t) -1) { }
     COutPoint(const uint256& hashIn, uint32_t nIn): hash(hashIn), n(nIn) { }
@@ -135,8 +135,8 @@ public:
 class CTxOut
 {
 public:
-    CAmount nValue;         //输出金额
-    CScript scriptPubKey;   //锁定脚本
+    CAmount nValue;         //交易输出对应的金额
+    CScript scriptPubKey;   //交易对应的公钥
 
     CTxOut()
     {
@@ -282,10 +282,10 @@ public:
     // actually immutable; deserialization and assignment are implemented,
     // and bypass the constness. This is safe, as they update the entire
     // structure, including the hash.
-    const std::vector<CTxIn> vin;       //交易输入
-    const std::vector<CTxOut> vout;     //交易输出
+    const std::vector<CTxIn> vin;       //交易对应的输入列表
+    const std::vector<CTxOut> vout;     //交易对应的输出列表
     const int32_t nVersion;             //版本
-    const uint32_t nLockTime;           //锁定时间
+    const uint32_t nLockTime;           //交易对应的锁定时间，目前没有使用（在最初版本的比特币中）
 
 private:
     /** Memory only. */
