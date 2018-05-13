@@ -2773,7 +2773,7 @@ bool CChainState::ResetBlockFailureFlags(CBlockIndex *pindex) {
 bool ResetBlockFailureFlags(CBlockIndex *pindex) {
     return g_chainstate.ResetBlockFailureFlags(pindex);
 }
-
+//将当前区块增加到对应的区块索引链中mapBlockIndex
 CBlockIndex* CChainState::AddToBlockIndex(const CBlockHeader& block)
 {
     // Check for duplicate
@@ -2794,7 +2794,7 @@ CBlockIndex* CChainState::AddToBlockIndex(const CBlockHeader& block)
     if (miPrev != mapBlockIndex.end())
     {
         pindexNew->pprev = (*miPrev).second;
-        pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
+        pindexNew->nHeight = pindexNew->pprev->nHeight + 1; //增加前一个区块索引对应的高度
         pindexNew->BuildSkip();
     }
     pindexNew->nTimeMax = (pindexNew->pprev ? std::max(pindexNew->pprev->nTimeMax, pindexNew->nTime) : pindexNew->nTime);
@@ -3657,8 +3657,8 @@ CBlockIndex * CChainState::InsertBlockIndex(const uint256& hash)
     if (hash.IsNull())
         return nullptr;
 
-    // Return existing
-    BlockMap::iterator mi = mapBlockIndex.find(hash);
+    // Return existing          //mapBlockIndex是一个unordered_map，它为整个块树中的每个块保存CBlockIndex
+    BlockMap::iterator mi = mapBlockIndex.find(hash);   //mapBlockIndex包含所有已知的块（“块”→“块索引”）
     if (mi != mapBlockIndex.end())
         return (*mi).second;
 
@@ -3672,6 +3672,7 @@ CBlockIndex * CChainState::InsertBlockIndex(const uint256& hash)
 //LoadBlockIndex首先将从数据库中加载fTxIndex变量，如果是在进行重索引那么就从命令行读取fTxIndex的值。另外如果我们之前
 //删除过区块文件，那么这里还会架子啊fHavePruned变量，同时还会根据磁盘上的标记来设置fReindex变量，并且从此往后fReindex
 //和fReset就表示不同的含义。
+//LoadBlockIndex方法从块索引文件blkindex.dat中读取对应的块索引信息，放入对应的全局内存对象mapBlockIndex中
 bool CChainState::LoadBlockIndex(const Consensus::Params& consensus_params, CBlockTreeDB& blocktree)
 {
     if (!blocktree.LoadBlockIndexGuts(consensus_params, [this](const uint256& hash){ return this->InsertBlockIndex(hash); }))
