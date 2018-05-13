@@ -22,7 +22,7 @@
 #include <boost/thread.hpp>//boost::thread_group是一个管理一组线程的类，它由boost库提供，可以实现对多个线程统一管理。
 
 #include <stdio.h>
-//比特币的区块结构解析参考：https://www.cnblogs.com/binyue/p/8558446.html
+//比特币的区块结构解析参考：https://www.cnblogs.com/binyue/p/8558446.html https://www.jianshu.com/u/30081a05cf95
 /* Introduction text for doxygen: */
 
 /*! \mainpage Developer documentation

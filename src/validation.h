@@ -357,7 +357,7 @@ bool CheckSequenceLocks(const CTransaction &tx, int flags, LockPoints* lp = null
 /**
  * Closure representing one script verification
  * Note that this stores references to the spending transaction 
- */
+ *///脚本验证的封装，并且包含了输出交易的信息，也就是说主要是对输出交易的脚本验证。
 class CScriptCheck
 {
 private:

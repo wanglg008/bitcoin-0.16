@@ -195,7 +195,7 @@ void CDBEnv::MakeMock()
     fDbEnvInit = true;
     fMockDb = true;
 }
-
+//验证钱包数据库并在必要时执行钱包恢复操作。
 CDBEnv::VerifyResult CDBEnv::Verify(const std::string& strFile, recoverFunc_type recoverFunc, std::string& out_backup_filename)
 {
     LOCK(cs_db);

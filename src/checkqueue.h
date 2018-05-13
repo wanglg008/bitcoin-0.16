@@ -25,7 +25,7 @@ class CCheckQueueControl;
   * onto the queue, where they are processed by N-1 worker threads. When
   * the master is done adding work, it temporarily joins the worker pool
   * as an N'th worker, until all jobs are done.
-  */
+  *///该队列是用于执行验证的队列，验证类为typename T，类T必须实现返回bool值的operator()函数。
 template <typename T>
 class CCheckQueue
 {
@@ -74,11 +74,13 @@ private:
             {
                 boost::unique_lock<boost::mutex> lock(mutex);
                 // first do the clean-up of the previous loop run (allowing us to do it in the same critsect)
+                // 主线程（Master）会将验证批量地分配到队列中，然后这些队列的任务由N-1个工作线程处理；
                 if (nNow) {
                     fAllOk &= fOk;
                     nTodo -= nNow;
                     if (nTodo == 0 && !fMaster)
                         // We processed the last element; inform the master it can exit and return the result
+                        // 当主线程完成了任务添加后，它也暂时作为第N个工人加入到工人池队列中，知道所有任务都完成才退出
                         condMaster.notify_one();
                 } else {
                     // first iteration

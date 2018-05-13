@@ -1668,10 +1668,10 @@ static bool WriteTxIndexDataForBlock(const CBlock& block, CValidationState& stat
 }
 
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
-
+//该函数为运行一个脚本验证线程的实例
 void ThreadScriptCheck() {
-    RenameThread("bitcoin-scriptch");
-    scriptcheckqueue.Thread();
+    RenameThread("bitcoin-scriptch"); //通过RenameThread函数定义了运行脚本验证线程的名字：bitcoin-scriptch。
+    scriptcheckqueue.Thread();        //通过脚本验证队列对象scriptcheckqueue启动脚本验证线程
 }
 
 // Protected by cs_main
